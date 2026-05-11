@@ -1,4 +1,4 @@
-# 🎵 VibeFinder Lite
+# 🎵 SoundAgent
 
 ### An Agentic AI Music Recommender powered by Claude
 
@@ -6,12 +6,14 @@
 
 ## What It Does
 
-VibeFinder Lite is an AI-powered music recommendation assistant. You describe what you want to hear — a mood, a vibe, a moment — and it builds you a playlist with an explanation for why each song fits.
+SoundAgent is an AI-powered music recommendation assistant with a modern React web UI. Describe what you want to hear — a mood, a vibe, a moment — and it builds you a playlist, with in-app 30-second audio previews via Deezer.
 
 - Natural language input parsed by **Claude** into structured preferences
 - Songs retrieved from a curated catalog and scored with multi-step reasoning
 - Confidence scoring and guardrails to validate results
-- Streaming explanation from Claude for every recommendation
+- In-app **30-second audio previews** with play/pause and seek
+- Quick links to **YouTube** and **Spotify** for every track
+- Ready-made curated playlists for common moods
 
 ---
 
@@ -36,9 +38,9 @@ VibeFinder Lite is an AI-powered music recommendation assistant. You describe wh
 
 ## Video Walkthrough
 
-![VibeFinder Demo](assets/demo.gif)
+![SoundAgent Demo](assets/demo.gif)
 
-> Covers: home dashboard, profile-based recommendations, natural language AI input, confidence scoring, and ready-made playlists.
+> Covers: home dashboard, natural language AI input, confidence scoring, ready-made playlists, and profile-based recommendations.
 
 ---
 
@@ -51,12 +53,9 @@ flowchart TD
     C --> D[Scoring Engine]
     D --> E[Ranking + Diversity Filter]
     E --> F[Validation + Confidence]
-    F --> G[Claude Explanation — streaming]
-    G --> H[User Output]
-    subgraph Reliability
-      I[Evaluation Harness]
-    end
-    H --> I
+    F --> G[Claude Explanation]
+    G --> H[React UI]
+    H --> I[Deezer 30s Preview]
 ```
 
 | Component | File | Role |
@@ -64,33 +63,39 @@ flowchart TD
 | Claude Intent Parser | `src/claude_client.py`, `src/system.py` | Parses natural language into mood, energy, genre, context |
 | Retriever | `src/system.py` | Selects candidates via metadata + keyword matching |
 | Recommender | `src/recommender.py` | Weighted scoring, diversity penalty, ranking |
-| Explanation | `src/claude_client.py` | Streams a 2–3 sentence playlist explanation |
+| FastAPI Backend | `api/main.py` | REST API + Deezer preview proxy + session memory |
+| React Frontend | `frontend/src/` | Vite + Tailwind UI with animations and audio playback |
 
 ---
 
 ## Key Features
 
 - **Claude API — Structured Mood Parsing** — natural language like *"I'm feeling nostalgic and melancholic tonight"* is sent to Claude with a Pydantic JSON schema; returns validated structured preferences. Falls back to keyword matching without an API key.
-- **Claude API — Streaming Explanation** — after ranking, Claude streams a warm explanation of why the playlist fits. Shown in the "Why these songs?" section of the web app.
+- **Claude API — Streaming Explanation** — after ranking, Claude streams a warm explanation of why the playlist fits.
+- **In-App Audio Previews** — 30-second Deezer previews play directly in the card; album art loads automatically.
 - **RAG** — retrieves song documents and custom genre notes from `data/genre_notes.csv` before scoring.
 - **Agentic Workflow** — parse → retrieve → score → rank → validate → explain.
+- **Session Memory** — recommendations build on prior context within a session.
 - **Listening Profiles** — tuned weights for study, party, workout, relax, and night.
-- **Tone Adaptation** — detects casual, friendly, or formal tone cues and adapts phrasing.
-- **Reliability Harness** — `src/evaluator.py` runs synthetic intent cases and reports mood/context alignment and confidence.
 
 ---
 
 ## Project Structure
 
 ```
+api/
+  main.py            — FastAPI backend (recommendations + Deezer preview proxy)
+frontend/
+  src/
+    App.jsx          — main layout, hero, tab navigation
+    components/      — SongCard, ProfileTab, NLTab, PlaylistsTab
+    index.css        — design system (CSS variables, animations)
 src/
-  claude_client.py   — Claude API integration (mood parsing + streaming explanation)
+  claude_client.py   — Claude API integration (mood parsing + explanation)
   recommender.py     — scoring, ranking, diversity penalty
   system.py          — agentic pipeline: parse, retrieve, validate, confidence
-  main.py            — CLI entrypoint
   evaluator.py       — reliability harness
-app.py               — Streamlit web UI
-tests/               — unit + agent tests
+app.py               — Streamlit fallback UI
 data/songs.csv       — song catalog
 data/genre_notes.csv — external genre notes for RAG
 ```
@@ -104,80 +109,30 @@ pip install -r requirements.txt
 export ANTHROPIC_API_KEY=your_key_here
 ```
 
-> Without an API key the app still works — it falls back to keyword-based parsing and skips the AI explanation.
-
-**Run the CLI:**
+**Run the API:**
 ```bash
-python3 -m src.main
+uvicorn api.main:app --reload
 ```
+
+**Run the frontend:**
+```bash
+cd frontend && npm install && npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173)
+
+> Without an API key the app still works — it falls back to keyword-based parsing and skips the AI explanation.
 
 **Run tests:**
 ```bash
 python3 -m pytest -q
 ```
 
-**Run the reliability evaluator:**
-```bash
-python3 -m src.evaluator
-```
-
-**Run the web app:**
-```bash
-streamlit run app.py
-```
-
----
-
-## Sample Output
-
-### Profile-based
-
-```
-🎵 High-Energy Pop - Top 5 Recommendations
-
-User Profile:
-   • Mood: HAPPY  • Energy: 0.9  • Genre: POP  • Era: 2020s
-
-Rank | Title          | Artist        | Genre    | Mood  | Score
-1    | Sunrise City   | Neon Echo     | pop      | happy | 0.887
-2    | Electric Dream | Synth Wave    | house    | happy | 0.825
-3    | Rooftop Lights | Indigo Parade | indie pop| happy | 0.765
-```
-
-### Natural language
-
-```
-Request: Recommend upbeat party music for a happy listener who loves electronic pop.
-Mode: genre-first  |  Confidence: 0.87
-
-1. Sunrise City by Neon Echo (pop, happy) — 0.887
-2. Electric Dream by Synth Wave (house, happy) — 0.825
-```
-
-### Reliability evaluator
-
-```
-RELIABILITY EVALUATION SUMMARY
-Case 1: upbeat party music — Top: Sunrise City — Passed ✓
-Case 2: calm study songs  — Top: Midnight Coding — Passed ✓
-Case 3: intense workout   — Top: Gym Hero — Passed ✓
-Case 4: sad night music   — Top: Midnight Blues — Failed ✗
-
-3/4 cases passed the reliability check.
-```
-
----
-
-## Reflection
-
-The biggest gain in this project was making the decision flow visible — parse intent, fetch candidates, score, validate — instead of treating the model as a black box. It also highlighted that an AI layer is only as reliable as the data underneath it.
-
 ---
 
 ## Links
 
-- GitHub: https://github.com/kneha07/applied-ai-music-system
-
+- GitHub: https://github.com/kneha07/SoundAgent-Agentic-AI-Music-Recommender-
 
 ---
 
