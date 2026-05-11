@@ -1,0 +1,10 @@
+%% Mermaid diagram source for VibeFinder Lite architecture
+flowchart TD
+    A[User Request] --> B[Intent Parser]
+    B --> C[Candidate Retriever]
+    C --> D[Recommender Scoring]
+    D --> E[Ranking + Diversity Filter]
+    E --> F[Validation + Confidence]
+    F --> G[User Output]
+    H[Evaluation Harness] --> F
+    H --> G

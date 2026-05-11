@@ -1,0 +1,36 @@
+id,title,artist,genre,mood,energy,tempo_bpm,valence,danceability,acousticness,popularity,release_decade,mood_tags,instrumentalness,speechiness,listening_context
+1,Levitating,Dua Lipa,pop,happy,0.82,103,0.87,0.82,0.08,92,2020s,euphoric;bright,0.00,0.04,party
+2,Blinding Lights,The Weeknd,synthwave,happy,0.80,171,0.65,0.51,0.00,96,2020s,euphoric;driving,0.00,0.06,drive
+3,As It Was,Harry Styles,pop,happy,0.73,174,0.73,0.78,0.11,95,2020s,bright;uplifting,0.00,0.03,party
+4,Don't Start Now,Dua Lipa,pop,happy,0.84,124,0.75,0.76,0.04,91,2020s,euphoric;danceable,0.00,0.05,party
+5,One More Time,Daft Punk,house,happy,0.88,123,0.95,0.86,0.01,88,2000s,euphoric;danceable,0.04,0.09,party
+6,Get Lucky,Daft Punk,funk,happy,0.79,116,0.85,0.82,0.07,87,2010s,groovy;uplifting,0.04,0.07,party
+7,Shape of You,Ed Sheeran,pop,happy,0.83,96,0.93,0.83,0.07,94,2010s,danceable;romantic,0.00,0.08,party
+8,Golden Hour,JVKE,pop,happy,0.60,97,0.87,0.66,0.26,85,2020s,warm;romantic,0.00,0.03,coffee
+9,Eye of the Tiger,Survivor,rock,intense,0.90,109,0.58,0.66,0.02,82,1980s,powerful;motivating,0.00,0.05,workout
+10,Lose Yourself,Eminem,hip-hop,intense,0.92,171,0.54,0.60,0.00,88,2000s,aggressive;powerful,0.00,0.28,workout
+11,Thunderstruck,AC/DC,rock,intense,0.88,133,0.47,0.56,0.01,84,1990s,powerful;aggressive,0.01,0.04,workout
+12,Enter Sandman,Metallica,metal,intense,0.94,123,0.33,0.52,0.00,80,1990s,dark;powerful,0.00,0.07,workout
+13,Titanium,David Guetta,house,intense,0.80,126,0.73,0.72,0.02,85,2010s,powerful;uplifting,0.00,0.05,workout
+14,POWER,Kanye West,hip-hop,intense,0.78,141,0.40,0.46,0.03,82,2010s,powerful;dark,0.00,0.09,workout
+15,Midnight Rain,Taylor Swift,pop,chill,0.42,80,0.55,0.58,0.21,83,2020s,dreamy;nostalgic,0.00,0.04,study
+16,Electric Feel,MGMT,indie,chill,0.58,107,0.78,0.73,0.06,78,2000s,dreamy;groovy,0.01,0.04,study
+17,Coffee,beabadoobee,indie,chill,0.45,118,0.71,0.72,0.45,74,2020s,dreamy;mellow,0.00,0.03,coffee
+18,Intro,The xx,indie,chill,0.32,100,0.52,0.55,0.32,70,2010s,minimal;focused,0.42,0.03,study
+19,Weightless,Marconi Union,ambient,relaxed,0.22,60,0.31,0.22,0.42,60,2010s,calm;ethereal,0.89,0.04,study
+20,Someone Like You,Adele,pop,sad,0.32,68,0.32,0.43,0.46,90,2010s,emotional;heartbreak,0.00,0.03,relax
+21,Drivers License,Olivia Rodrigo,pop,sad,0.38,72,0.39,0.47,0.36,88,2020s,heartbreak;emotional,0.00,0.03,night
+22,The Night We Met,Lord Huron,indie,sad,0.42,132,0.43,0.55,0.34,75,2010s,nostalgic;melancholic,0.00,0.03,night
+23,Skinny Love,Bon Iver,folk,sad,0.33,100,0.45,0.48,0.74,70,2000s,melancholic;raw,0.00,0.03,night
+24,Liability,Lorde,pop,sad,0.27,73,0.37,0.35,0.50,72,2010s,emotional;introspective,0.00,0.05,night
+25,Mr. Brightside,The Killers,rock,moody,0.82,148,0.67,0.60,0.01,89,2000s,nostalgic;passionate,0.00,0.06,party
+26,Bad Guy,Billie Eilish,pop,moody,0.65,135,0.56,0.70,0.10,91,2020s,dark;confident,0.00,0.11,night
+27,Starboy,The Weeknd,r&b,moody,0.72,186,0.60,0.72,0.04,90,2010s,dark;confident,0.00,0.11,night
+28,Redbone,Childish Gambino,r&b,chill,0.52,96,0.82,0.68,0.17,82,2010s,groovy;soulful,0.00,0.06,relax
+29,Holocene,Bon Iver,indie,relaxed,0.38,86,0.62,0.55,0.52,72,2010s,ethereal;melancholic,0.03,0.03,relax
+30,Africa,Toto,rock,happy,0.62,93,0.75,0.70,0.05,84,1980s,nostalgic;warm,0.00,0.04,drive
+31,Take On Me,a-ha,synthwave,happy,0.78,169,0.88,0.72,0.02,82,1980s,euphoric;nostalgic,0.00,0.05,drive
+32,Gravity,John Mayer,blues,sad,0.42,95,0.42,0.53,0.52,73,2000s,emotional;soulful,0.00,0.03,coffee
+33,Despacito,Luis Fonsi,latin,happy,0.81,89,0.89,0.69,0.23,92,2010s,danceable;sensual,0.00,0.14,beach
+34,Slow Dancing in a Burning Room,John Mayer,blues,sad,0.38,77,0.38,0.51,0.35,75,2000s,emotional;soulful,0.00,0.03,relax
+35,Breathe (2 AM),Anna Nalick,folk,relaxed,0.30,79,0.56,0.45,0.76,62,2000s,warm;emotional,0.00,0.05,coffee
