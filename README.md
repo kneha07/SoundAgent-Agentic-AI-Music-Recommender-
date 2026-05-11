@@ -36,9 +36,7 @@ VibeFinder Lite is an AI-powered music recommendation assistant. You describe wh
 
 ## Video Walkthrough
 
-[![Watch the demo](https://img.shields.io/badge/Loom-Watch%20Demo-00897B?style=for-the-badge&logo=loom&logoColor=white)](https://www.loom.com/share/4190bc0d238745ada35a814a835d8754)
-
-> The walkthrough covers: profile-based recommendations, natural language agent output, confidence scoring, and the system design rationale.
+> Coming soon — demo video walkthrough
 
 ---
 
