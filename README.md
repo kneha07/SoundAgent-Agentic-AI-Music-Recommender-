@@ -36,7 +36,7 @@ VibeFinder Lite is an AI-powered music recommendation assistant. You describe wh
 
 ## Video Walkthrough
 
-https://github.com/kneha07/SoundAgent-Agentic-AI-Music-Recommender-/raw/main/assets/demo.mp4
+![VibeFinder Demo](assets/demo.gif)
 
 > Covers: home dashboard, profile-based recommendations, natural language AI input, confidence scoring, and ready-made playlists.
 
