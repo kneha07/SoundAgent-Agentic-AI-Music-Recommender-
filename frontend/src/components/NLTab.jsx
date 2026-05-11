@@ -3,10 +3,10 @@ import { recommendByNL } from '../api'
 import SongCard from './SongCard'
 
 const SAMPLES = [
-  'Upbeat party music for a happy listener who loves electronic pop',
-  'Calm study songs with a chill mood and dreamy textures',
-  'Intense workout tracks with strong rock energy',
-  'Sad but powerful night music that is emotional and vocal-heavy',
+  { text: 'Upbeat party music for a happy listener who loves electronic pop', icon: '🎉' },
+  { text: 'Calm study songs with a chill mood and dreamy textures', icon: '📚' },
+  { text: 'Intense workout tracks with strong rock energy', icon: '💪' },
+  { text: 'Sad but powerful night music that is emotional and vocal-heavy', icon: '🌙' },
 ]
 
 export default function NLTab({ sessionId, onSession }) {
@@ -16,80 +16,90 @@ export default function NLTab({ sessionId, onSession }) {
   const [error, setError] = useState(null)
 
   const submit = async (q) => {
-    const text = q || query
-    if (!text.trim()) return
-    setLoading(true); setError(null)
+    const text = (q || query).trim()
+    if (!text) return
+    setQuery(text); setLoading(true); setError(null)
     try {
       const data = await recommendByNL({ query: text, session_id: sessionId, k: 5 })
-      setResults(data)
-      onSession(data.session_id)
-    } catch (e) {
-      setError('Failed to get recommendations. Is the API running?')
-    } finally {
-      setLoading(false)
-    }
+      setResults(data); onSession(data.session_id)
+    } catch { setError('Could not reach the API — is it running?') }
+    finally { setLoading(false) }
   }
 
   return (
-    <div className="space-y-6">
-      {/* Sample prompts */}
-      <div>
-        <p className="text-sm text-slate-400 mb-2">Try a sample prompt:</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28, alignItems: 'start' }}>
+
+      {/* Left */}
+      <div className="anim-fade-up">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
+          <p style={{ fontWeight: 800, fontSize: 14, color: 'var(--text)' }}>💬 Natural Language Request</p>
+          <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(6,182,212,0.15)', color: 'var(--cyan)', fontWeight: 700, border: '1px solid rgba(6,182,212,0.25)' }}>AI-Powered</span>
+        </div>
+
+        <p style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 10, fontWeight: 600 }}>Try a sample:</p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7, marginBottom: 20 }}>
           {SAMPLES.map(s => (
-            <button key={s} onClick={() => { setQuery(s); submit(s) }}
-              className="text-left text-sm px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:border-cyan-500/40 hover:text-white transition truncate">
-              {s}
+            <button key={s.text} onClick={() => submit(s.text)}
+              aria-label={`Try: ${s.text}`}
+              style={{
+                textAlign: 'left', padding: '10px 12px', borderRadius: 'var(--radius-sm)',
+                background: 'var(--card)', border: '1px solid var(--border)',
+                color: 'var(--text2)', cursor: 'pointer', fontSize: 12, lineHeight: 1.4,
+                transition: 'all 0.2s', display: 'flex', gap: 7, alignItems: 'flex-start',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border2)'; e.currentTarget.style.background = 'var(--card2)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--card)' }}
+            >
+              <span style={{ flexShrink: 0 }}>{s.icon}</span>
+              <span style={{ overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{s.text}</span>
             </button>
           ))}
         </div>
-      </div>
 
-      {/* Input */}
-      <div className="space-y-3">
-        <textarea
-          value={query}
-          onChange={e => setQuery(e.target.value)}
+        <label htmlFor="nl-input" style={{ display: 'block', fontSize: 12, color: 'var(--text2)', fontWeight: 600, marginBottom: 6 }}>Describe your ideal playlist</label>
+        <textarea id="nl-input" value={query} onChange={e => setQuery(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), submit())}
-          placeholder="Describe your ideal playlist…"
-          rows={3}
-          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm resize-none focus:outline-none focus:border-cyan-500/60 placeholder-slate-500"
-        />
-        <button onClick={() => submit()} disabled={loading || !query.trim()}
-          className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:opacity-90 transition disabled:opacity-50">
-          {loading ? 'Finding songs…' : '🔍 Find My Songs'}
+          placeholder="e.g. chill lo-fi beats for a rainy afternoon with coffee…" rows={4}
+          className="input" style={{ resize: 'none' }} />
+
+        <button onClick={() => submit()} disabled={loading || !query.trim()} className="btn" style={{ marginTop: 10 }} aria-busy={loading}>
+          {loading
+            ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}><span className="anim-spin">◌</span> Finding…</span>
+            : '🔍 Find My Songs'}
         </button>
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p role="alert" style={{ color: '#f87171', fontSize: 12, marginTop: 8 }}>{error}</p>}
       </div>
 
-      {/* Results */}
-      {results && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-white">Your Playlist</h2>
-            {results.confidence && (
-              <span className="text-xs px-3 py-1 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
-                {Math.round(results.confidence * 100)}% confidence
-              </span>
-            )}
-            {results.mode && (
-              <span className="text-xs px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                {results.mode}
-              </span>
-            )}
-          </div>
-
-          {results.explanation && (
-            <div className="bg-white/5 border border-cyan-500/20 rounded-xl p-4 text-sm text-slate-300 italic">
-              {results.explanation}
+      {/* Right */}
+      <section aria-label="Natural language results" className="anim-fade-up" style={{ animationDelay: '0.1s' }}>
+        {results ? (
+          <div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+              <p style={{ fontWeight: 800, fontSize: 14, color: 'var(--text)' }}>🎶 Your Playlist</p>
+              {results.confidence && <Badge color="var(--green)">{Math.round(results.confidence * 100)}% confidence</Badge>}
+              {results.mode && <Badge color="var(--cyan)">{results.mode}</Badge>}
             </div>
-          )}
-
-          <div className="space-y-3">
-            {results.songs.map((s, i) => <SongCard key={i} song={s} rank={i + 1} />)}
+            {results.explanation && (
+              <div className="card" style={{ padding: '12px 14px', marginBottom: 14, fontSize: 13, color: 'var(--text2)', fontStyle: 'italic', borderLeft: '3px solid var(--cyan)' }}>
+                {results.explanation}
+              </div>
+            )}
+            <div className="stagger">
+              {results.songs.map((s, i) => <SongCard key={i} song={s} rank={i + 1} style={{ marginBottom: 10 }} />)}
+            </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="card" style={{ padding: 48, textAlign: 'center', color: 'var(--text3)', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, minHeight: 200 }}>
+            <div style={{ fontSize: 40 }}>💬</div>
+            <p style={{ fontWeight: 600, color: 'var(--text2)', fontSize: 14 }}>Describe your vibe</p>
+            <p style={{ fontSize: 12 }}>Type anything and the AI will find the perfect songs.</p>
+          </div>
+        )}
+      </section>
     </div>
   )
+}
+
+function Badge({ color, children }) {
+  return <span style={{ fontSize: 11, padding: '3px 9px', borderRadius: 20, background: `${color}18`, color, border: `1px solid ${color}44`, fontWeight: 600 }}>{children}</span>
 }

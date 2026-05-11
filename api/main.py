@@ -6,13 +6,15 @@ from typing import Dict, List, Optional
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
+import requests as _requests
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from src.recommender import load_songs, recommend_songs, UserProfile
+from src.recommender import load_songs, recommend_songs
 from src.system import RecommendationAgent
 
 # ── App ────────────────────────────────────────────────────────────────────────
@@ -94,17 +96,19 @@ def catalog():
 @app.post("/api/recommend/profile", response_model=RecommendResponse)
 def recommend_profile(req: ProfileRequest):
     sid = get_or_create_session(req.session_id)
-    profile = UserProfile(
-        favorite_genre=req.genre,
-        favorite_mood=req.mood,
-        target_energy=req.energy,
-        likes_acoustic=False,
-        vocal_preference=req.vocal,
-        listening_context=req.context,
-        preferred_decade=req.decade,
-        desired_mood_tags=req.mood_tags,
-    )
-    results, scores = recommend_songs(songs, profile, k=req.k)
+    prefs = {
+        "favorite_genre": req.genre,
+        "mood": req.mood,
+        "favorite_mood": req.mood,
+        "energy": req.energy,
+        "target_energy": req.energy,
+        "likes_acoustic": False,
+        "vocal_preference": req.vocal,
+        "listening_context": req.context,
+        "preferred_decade": req.decade,
+        "desired_mood_tags": req.mood_tags,
+    }
+    raw = recommend_songs(prefs, songs, k=req.k)
     out = [
         SongOut(
             title=s.get("title", ""),
@@ -116,7 +120,7 @@ def recommend_profile(req: ProfileRequest):
             mood_tags=[t.strip() for t in str(s.get("mood_tags", "")).split(",") if t.strip()],
             listening_context=s.get("listening_context", "general"),
         )
-        for s, sc in zip(results, scores)
+        for s, sc, _ in raw
     ]
     sessions[sid].append({"type": "profile", "query": req.dict(), "results": [s.title for s in out]})
     return RecommendResponse(session_id=sid, songs=out)
@@ -159,6 +163,31 @@ def get_session(session_id: str):
 def clear_session(session_id: str):
     sessions.pop(session_id, None)
     return {"cleared": True}
+
+@app.get("/api/preview")
+def get_preview(title: str, artist: str):
+    query = f"{title} {artist}"
+    url = "https://api.deezer.com/search"
+    try:
+        resp = _requests.get(url, params={"q": query, "limit": 5}, timeout=5)
+        data = resp.json()
+        tracks = data.get("data", [])
+        if not tracks:
+            raise HTTPException(status_code=404, detail="No preview found")
+        # find first track with a preview URL
+        t = next((tr for tr in tracks if tr.get("preview")), None)
+        if not t:
+            raise HTTPException(status_code=404, detail="No preview found")
+        return {
+            "preview_url": t["preview"],
+            "title": t["title"],
+            "artist": t["artist"]["name"],
+            "album_cover": t["album"]["cover_medium"],
+        }
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=404, detail="Preview unavailable")
 
 # ── Serve React build ──────────────────────────────────────────────────────────
 frontend_dist = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "dist")

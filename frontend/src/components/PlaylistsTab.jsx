@@ -3,12 +3,12 @@ import { recommendByNL } from '../api'
 import SongCard from './SongCard'
 
 const PLAYLISTS = [
-  { name: 'Party Starter', emoji: '🎉', query: 'upbeat party music happy electronic pop high energy', desc: 'High-energy bangers to get the crowd moving' },
-  { name: 'Deep Focus', emoji: '🧠', query: 'calm study songs chill instrumental dreamy focus', desc: 'Calm, instrumental-friendly tracks for studying' },
-  { name: 'Pump Up', emoji: '💪', query: 'intense workout tracks strong rock aggressive driving energy', desc: 'Intense, driving tracks to push your workout harder' },
-  { name: 'Night Vibes', emoji: '🌙', query: 'moody atmospheric night music emotional vocal dark', desc: 'Moody, atmospheric songs for late nights' },
-  { name: 'Morning Energy', emoji: '☀️', query: 'bright uplifting morning pop happy energetic start day', desc: 'Bright, uplifting tracks to start your day right' },
-  { name: 'Coffee Shop', emoji: '☕', query: 'easy acoustic chill relaxed coffee afternoon lofi jazz', desc: 'Easy-going acoustic vibes for a relaxed afternoon' },
+  { name: 'Party Starter', emoji: '🎉', query: 'upbeat party music happy electronic pop high energy', desc: 'High-energy bangers', color: '#f59e0b' },
+  { name: 'Deep Focus',    emoji: '🧠', query: 'calm study songs chill instrumental dreamy focus',    desc: 'Calm focus music',   color: '#6366f1' },
+  { name: 'Pump Up',       emoji: '💪', query: 'intense workout tracks strong rock aggressive energy', desc: 'Workout intensity',  color: '#ef4444' },
+  { name: 'Night Vibes',   emoji: '🌙', query: 'moody atmospheric night music emotional vocal dark',  desc: 'Late night mood',    color: '#8b5cf6' },
+  { name: 'Morning',       emoji: '☀️', query: 'bright uplifting morning pop happy energetic day',    desc: 'Start your day',    color: '#f97316' },
+  { name: 'Coffee Shop',   emoji: '☕', query: 'easy acoustic chill relaxed coffee lofi jazz',         desc: 'Relaxed vibes',     color: '#10b981' },
 ]
 
 export default function PlaylistsTab({ sessionId, onSession }) {
@@ -18,38 +18,59 @@ export default function PlaylistsTab({ sessionId, onSession }) {
 
   const play = async (pl) => {
     setActive(pl.name); setLoading(pl.name)
-    const data = await recommendByNL({ query: pl.query, session_id: sessionId, k: 5 })
-    setResults({ ...data, name: pl.name })
-    onSession(data.session_id)
-    setLoading(null)
+    try {
+      const data = await recommendByNL({ query: pl.query, session_id: sessionId, k: 5 })
+      setResults({ ...data, name: pl.name, emoji: pl.emoji })
+      onSession(data.session_id)
+    } finally { setLoading(null) }
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+        <p style={{ fontWeight: 800, fontSize: 14, color: 'var(--text)' }}>🎧 Ready-Made Playlists</p>
+        <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(139,92,246,0.15)', color: '#8b5cf6', fontWeight: 700, border: '1px solid rgba(139,92,246,0.25)' }}>Curated</span>
+      </div>
+
+      <div className="stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 32 }}>
         {PLAYLISTS.map(pl => (
           <button key={pl.name} onClick={() => play(pl)}
-            className={`text-left p-5 rounded-2xl border transition-all ${
-              active === pl.name
-                ? 'border-cyan-500/60 bg-cyan-500/10'
-                : 'border-white/10 bg-white/5 hover:border-cyan-500/30 hover:bg-white/8'
-            }`}>
-            <div className="text-2xl mb-2">{pl.emoji}</div>
-            <p className="font-semibold text-white">{pl.name}</p>
-            <p className="text-xs text-slate-400 mt-1">{pl.desc}</p>
-            <div className="mt-3">
-              <span className="text-xs px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400">
-                {loading === pl.name ? 'Loading…' : 'Play'}
-              </span>
-            </div>
+            aria-pressed={active === pl.name}
+            aria-busy={loading === pl.name}
+            className="anim-fade-up"
+            style={{
+              textAlign: 'left', padding: '18px 18px 14px', borderRadius: 'var(--radius)', border: 'none', cursor: 'pointer',
+              background: active === pl.name
+                ? `linear-gradient(135deg, ${pl.color}18, ${pl.color}08)`
+                : 'var(--card)',
+              outline: active === pl.name ? `1px solid ${pl.color}55` : '1px solid var(--border)',
+              transition: 'all 0.22s',
+              position: 'relative', overflow: 'hidden',
+            }}
+            onMouseEnter={e => { if (active !== pl.name) { e.currentTarget.style.outline = '1px solid var(--border2)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 8px 24px ${pl.color}15` } }}
+            onMouseLeave={e => { if (active !== pl.name) { e.currentTarget.style.outline = '1px solid var(--border)'; e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' } }}
+          >
+            {/* Gradient accent top */}
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: active === pl.name ? `linear-gradient(90deg, ${pl.color}, transparent)` : 'transparent', transition: 'all 0.3s' }} />
+
+            <div style={{ fontSize: 26, marginBottom: 8 }}>{pl.emoji}</div>
+            <p style={{ fontWeight: 700, color: active === pl.name ? pl.color : 'var(--text)', fontSize: 13, margin: '0 0 4px', transition: 'color 0.2s' }}>{pl.name}</p>
+            <p style={{ color: 'var(--text3)', fontSize: 11, margin: '0 0 12px' }}>{pl.desc}</p>
+            <span style={{
+              fontSize: 11, padding: '3px 10px', borderRadius: 20, fontWeight: 600,
+              background: `${pl.color}20`, color: pl.color,
+              border: `1px solid ${pl.color}40`,
+            }}>{loading === pl.name ? '⏳ Loading…' : active === pl.name ? '✓ Playing' : '▶ Play'}</span>
           </button>
         ))}
       </div>
 
       {results && (
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-white">{results.name}</h2>
-          {results.songs.map((s, i) => <SongCard key={i} song={s} rank={i + 1} />)}
+        <div className="anim-fade-up">
+          <p style={{ fontWeight: 800, fontSize: 14, color: 'var(--text)', marginBottom: 14 }}>{results.emoji} {results.name}</p>
+          <div className="stagger">
+            {results.songs.map((s, i) => <SongCard key={i} song={s} rank={i + 1} style={{ marginBottom: 10 }} />)}
+          </div>
         </div>
       )}
     </div>
