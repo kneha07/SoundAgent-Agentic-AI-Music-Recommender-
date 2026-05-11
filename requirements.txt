@@ -3,3 +3,6 @@ pandas
 pytest
 requests
 streamlit
+fastapi
+uvicorn[standard]
+python-multipart
