@@ -177,7 +177,7 @@ The biggest gain in this project was making the decision flow visible — parse 
 ## Links
 
 - GitHub: https://github.com/kneha07/applied-ai-music-system
-- Demo video: https://www.loom.com/share/4190bc0d238745ada35a814a835d8754
+
 
 ---
 
