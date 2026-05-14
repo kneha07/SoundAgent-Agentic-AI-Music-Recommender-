@@ -2,6 +2,8 @@
 
 ### An Agentic AI Music Recommender powered by Claude
 
+> Built for the **AI Agents Hackathon**.
+
 ---
 
 ## What It Does
