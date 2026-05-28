@@ -144,3 +144,9 @@ python3 -m pytest -q
 - Conversational feedback loop so Claude can ask clarifying questions
 - Embedding-based retriever for semantic matching
 - Claude tool use to let the agent query the catalog dynamically
+
+---
+
+## License
+
+Copyright (c) 2026 Neha Kumari. All rights reserved. See [LICENSE](LICENSE) for details.
